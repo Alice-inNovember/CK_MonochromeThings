@@ -65,20 +65,18 @@ namespace UI
 
 		public void IdleMotion()
 		{
-			// ReSharper disable once Unity.InefficientPropertyAccess
 			var pos = _originPos;
 			var dir = (middle.position - new Vector3(pos.x, pos.y, 0)).normalized;
 			transform.DOMove(pos - dir * distance, duration).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
 		}
 		public void Hide()
 		{
-			_originScale = transform.localScale;
-
-			// ReSharper disable once Unity.InefficientPropertyAccess
 			var pos = _originPos;
 			var dir = (middle.position - new Vector3(pos.x, pos.y, 0)).normalized;
-			transform.DOMove(pos + dir * distance * 10, duration * 10).SetEase(Ease.InOutSine)
-				.OnComplete(()=>{
+			GetComponent<Button>().enabled = false;
+			transform.DOPause();
+			transform.DOMove(pos - (dir * distance) * 120, duration * 0.8f).SetEase(Ease.OutBounce)
+			.OnComplete(()=>{
 				gameObject.SetActive(false);
 			});
 		}
@@ -86,7 +84,12 @@ namespace UI
 		public void Show()
 		{
 			gameObject.SetActive(true);
-			transform.DOMove(_originPos, duration * 10).SetEase(Ease.InOutSine);
+			transform.DOPause();
+			transform.DOMove(_originPos, duration * 0.8f).SetEase(Ease.OutBounce)
+			.OnComplete(() => {
+				GetComponent<Button>().enabled = true;
+				IdleMotion();
+			});
 		}
 	}
 }

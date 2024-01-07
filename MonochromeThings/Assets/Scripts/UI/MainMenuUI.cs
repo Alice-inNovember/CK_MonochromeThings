@@ -5,13 +5,13 @@ namespace UI
 {
     public class MainMenuUI : MonoBehaviour
     {
-        [SerializeField] private List<ButtonAnim> buttons;
+        [SerializeField] private List<GameObject> buttons;
         
         public void Show()
         {
             foreach (var button in buttons)
             {
-                button.Show();
+                button.GetComponent<ButtonAnim>().Show();
             }
         }
 
@@ -19,7 +19,7 @@ namespace UI
         {
             foreach (var button in buttons)
             {
-                button.Hide();
+                button.GetComponent<ButtonAnim>().Hide();
             }
         }
     }

@@ -20,11 +20,13 @@ namespace UI
 		public void SettingsShow()
 		{
 			MenuHide();
+			settings.SetActive(true);
 		}
 
 		public void SettingsHide()
 		{
 			MenuShow();
+			settings.SetActive(false);
 		}
 	}
 }
