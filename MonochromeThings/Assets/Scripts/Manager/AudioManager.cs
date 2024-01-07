@@ -37,7 +37,7 @@ namespace Manager
 		}
 
 		//유저가 조작할 수 있는 믹서그룹 볼륨변수들의 이름을 반환하는 함수
-		public static string AudioTypeName(VolType type)
+		private static string AudioTypeName(VolType type)
 		{
 			return type switch
 			{

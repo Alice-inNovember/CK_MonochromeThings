@@ -22,8 +22,7 @@ namespace Manager
 			var filePath = Application.persistentDataPath + "/" + audioDataFileName;
 
 			File.WriteAllText(filePath, toJsonData);
-
-			Debug.Log("Saved AudioData at : <" + filePath + ">");
+			Debug.Log("Saved AudioData at : < " + filePath + " >");
 		}
 
 		//음량 설정 불러오기
@@ -32,16 +31,15 @@ namespace Manager
 			var filePath = Application.persistentDataPath + "/" + audioDataFileName;
 
 			//저장된 게임이 있다면
-			if (File.Exists(filePath))
-			{
-				var fromJsonData = File.ReadAllText(filePath);
+			if (!File.Exists(filePath))
+				return;
 
-				AudioVolume = JsonUtility.FromJson<AudioVolumeData>(fromJsonData);
+			var fromJsonData = File.ReadAllText(filePath);
+			AudioVolume = JsonUtility.FromJson<AudioVolumeData>(fromJsonData);
+			Debug.Log("Loaded AudioData");
 
-				Debug.Log("Loaded AudioData");
-
+			if (AudioManager.Instance != null)
 				AudioManager.Instance.InitSliderData();
-			}
 		}
 	}
 }
