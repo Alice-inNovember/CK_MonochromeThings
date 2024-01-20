@@ -9,7 +9,6 @@ namespace Manager
 	{
 		[SerializeField] private string audioDataFileName = "AudioData.json";
 		public AudioVolumeData AudioVolume = new();
-		public InventoryData Inventory = new();
 
 		private void Start()
 		{
