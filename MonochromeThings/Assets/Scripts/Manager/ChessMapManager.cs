@@ -53,6 +53,7 @@ namespace Manager
 			InitPlayer();
 			InitEnemy();
 			_turnToSpawn = 4;
+			GameObject.Find("ChessMapUIManager").GetComponent<ChessMapUIManager>().SetTurnToSpawn(_turnToSpawn);
 		}
 
 		private void InitTile()
@@ -164,6 +165,7 @@ namespace Manager
 				CreateEnemy();
 				_turnToSpawn = 4;
 			}
+			GameObject.Find("ChessMapUIManager").GetComponent<ChessMapUIManager>().SetTurnToSpawn(_turnToSpawn);
 			_turn = PieceType.Player;
 		}
 
@@ -180,7 +182,7 @@ namespace Manager
 
 		public void TileSelect(int x, int y)
 		{
-			ResetTileColor();
+			UpdateTileColor();
 			if (_player.IsSelected)
 				PlayerTurn(x, y);
 			_player.IsSelected = false;
@@ -226,7 +228,6 @@ namespace Manager
 				StartCoroutine(EnemyTurn());
 			}
 		}
-		
 
 		public void OnPlayerClick()
 		{
@@ -236,13 +237,9 @@ namespace Manager
 			HighlightAvailableTile();
 		}
 
-		private void ChangeTileColor(int x, int y, Color color)
+		private void UpdateTileColor()
 		{
-			if (x is < 0 or >= MapSize)
-				return;
-			if (y is < 0 or >= MapSize)
-				return;
-			_tile.TileArray[x, y].ChangeColor(color);
+			ResetTileColor();
 		}
 
 		private void HighlightAvailableTile()
@@ -258,6 +255,15 @@ namespace Manager
 			for (var y = 0; y < MapSize; y++)
 				for (var x = 0; x < MapSize; x++)
 					ChangeTileColor(x, y, Color.white);
+		}
+		
+		private void ChangeTileColor(int x, int y, Color color)
+		{
+			if (x is < 0 or >= MapSize)
+				return;
+			if (y is < 0 or >= MapSize)
+				return;
+			_tile.TileArray[x, y].ChangeColor(color);
 		}
 	}
 }
