@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Data;
 using Manager;
 using UnityEngine;
 using DG.Tweening;
@@ -7,20 +8,16 @@ using UnityEngine.Serialization;
 
 public class Tile : MonoBehaviour
 {
-	private ChessMapManager _chessMapManager;
-	private int _x;
-	private int _y;
+	private Point _pos;
 
-	public void Init(int x, int y, ChessMapManager chessMapManager)
+	public void Init(Point pos)
 	{
-		_chessMapManager = chessMapManager;
-		_x = x;
-		_y = y;
+		_pos = pos;
 	}
 
 	public void OnPointerClick()
 	{
-		_chessMapManager.TileSelect(_x, _y);
+		ChessGameManager.Instance.TileSelect(_pos);
 	}
 
 	public void ChangeColor(Color color)

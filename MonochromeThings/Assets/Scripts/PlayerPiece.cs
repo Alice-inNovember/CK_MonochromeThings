@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using ClassTemp;
+using Data;
 using DG.Tweening;
 using UnityEngine;
 using Manager;
 using Unity.Mathematics;
 
 
-public class PlayerPieceController : MonoBehaviour
+public class PlayerPiece : MonoBehaviour
 {
 	private bool _isMoving;
 
@@ -16,10 +17,10 @@ public class PlayerPieceController : MonoBehaviour
 		_isMoving = false;
 	}
 
-	public void Move(int x, int y)
+	public void Move(Point p)
 	{
 		_isMoving = true;
-		transform.DOMove(new Vector3(x, y, 0), 0.5f).SetEase(Ease.InOutSine).OnComplete(() =>
+		transform.DOMove(new Vector3(p.x, p.y, 0), 0.5f).SetEase(Ease.InOutSine).OnComplete(() =>
 		{
 			_isMoving = false;
 		});
@@ -29,6 +30,6 @@ public class PlayerPieceController : MonoBehaviour
 	{
 		if (_isMoving == true)
 			return;
-		ChessMapManager.Instance.OnPlayerClick();
+		ChessGameManager.Instance.OnPlayerClick();
 	}
 }

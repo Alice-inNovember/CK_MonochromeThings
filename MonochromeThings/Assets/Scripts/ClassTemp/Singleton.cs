@@ -1,23 +1,22 @@
-using UnityEngine;
-
-namespace ClassTemp
+﻿namespace ClassTemp
 {
-	public class Singleton<T> : MonoBehaviour where T : Singleton<T>
+	public class Singleton<T> where T : Singleton<T>, new()
 	{
 		private static T _instance;
-		public static T Instance => _instance == null ? null : _instance;
-
-		protected virtual void Awake()
+		public static T Instance
 		{
-			if (_instance == null)
+			get
 			{
-				_instance = (T)this;
-				DontDestroyOnLoad(gameObject);
+				if (_instance != null)
+					return _instance;
+				_instance = new T();
+				_instance.Init();
+				return _instance;
 			}
-			else
-			{
-				Destroy(gameObject);
-			}
+		}
+		protected virtual void Init()
+		{
+			
 		}
 	}
 }

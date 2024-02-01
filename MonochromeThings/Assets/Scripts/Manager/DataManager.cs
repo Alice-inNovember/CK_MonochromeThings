@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Manager
 {
-	public class DataManager : Singleton<DataManager>
+	public class DataManager : MonoBehaviourSingleton<DataManager>
 	{
 		[SerializeField] private string audioDataFileName = "AudioData.json";
 		public AudioVolumeData AudioVolume = new();

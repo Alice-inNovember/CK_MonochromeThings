@@ -15,7 +15,7 @@ namespace Manager
 		Voice
 	}
 
-	public class AudioManager : Singleton<AudioManager>
+	public class AudioManager : MonoBehaviourSingleton<AudioManager>
 	{
 		[SerializeField] private AudioMixer mainMixer;
 		[SerializeField] private Slider masterSlider;
