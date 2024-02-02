@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ScriptableObject
 {
-    [CreateAssetMenu(fileName = "EnemyData", menuName = "Scriptable Object/Zombie Data", order = int.MaxValue)]
+    [CreateAssetMenu(fileName = "EnemyData", menuName = "Scriptable Object/Enemy Data", order = int.MaxValue)]
     [System.Serializable]
     public class EnemyData : UnityEngine.ScriptableObject
     {

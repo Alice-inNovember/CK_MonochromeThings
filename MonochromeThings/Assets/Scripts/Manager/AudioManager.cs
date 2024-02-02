@@ -27,13 +27,13 @@ namespace Manager
 		public void InitSliderData()
 		{
 			if (masterSlider)
-				masterSlider.value = DataManager.Instance.AudioVolume.Master;
+				masterSlider.value = AudioDataManager.Instance.AudioVolume.Master;
 			if (bgmSlider)
-				bgmSlider.value = DataManager.Instance.AudioVolume.Bgm;
+				bgmSlider.value = AudioDataManager.Instance.AudioVolume.Bgm;
 			if (sfxSlider)
-				sfxSlider.value = DataManager.Instance.AudioVolume.Sfx;
+				sfxSlider.value = AudioDataManager.Instance.AudioVolume.Sfx;
 			if (voiceSlider)
-				voiceSlider.value = DataManager.Instance.AudioVolume.Voice;
+				voiceSlider.value = AudioDataManager.Instance.AudioVolume.Voice;
 		}
 
 		//유저가 조작할 수 있는 믹서그룹 볼륨변수들의 이름을 반환하는 함수
@@ -52,45 +52,45 @@ namespace Manager
 		//마스터 볼륨 조작
 		public void MasterControl()
 		{
-			DataManager.Instance.AudioVolume.Master = masterSlider.value;
+			AudioDataManager.Instance.AudioVolume.Master = masterSlider.value;
 
-			if (DataManager.Instance.AudioVolume.Master <= -40f)
+			if (AudioDataManager.Instance.AudioVolume.Master <= -40f)
 				mainMixer.SetFloat(AudioTypeName(VolType.Master), -80);
 			else
-				mainMixer.SetFloat(AudioTypeName(VolType.Master), DataManager.Instance.AudioVolume.Master);
+				mainMixer.SetFloat(AudioTypeName(VolType.Master), AudioDataManager.Instance.AudioVolume.Master);
 		}
 
 		//BGM 볼륨 조작
 		public void BgmControl()
 		{
-			DataManager.Instance.AudioVolume.Bgm = bgmSlider.value;
+			AudioDataManager.Instance.AudioVolume.Bgm = bgmSlider.value;
 
-			if (DataManager.Instance.AudioVolume.Bgm <= -40f)
+			if (AudioDataManager.Instance.AudioVolume.Bgm <= -40f)
 				mainMixer.SetFloat(AudioTypeName(VolType.Bgm), -80);
 			else
-				mainMixer.SetFloat(AudioTypeName(VolType.Bgm), DataManager.Instance.AudioVolume.Bgm);
+				mainMixer.SetFloat(AudioTypeName(VolType.Bgm), AudioDataManager.Instance.AudioVolume.Bgm);
 		}
 
 		//SFX 볼륨 조작
 		public void SfxControl()
 		{
-			DataManager.Instance.AudioVolume.Sfx = sfxSlider.value;
+			AudioDataManager.Instance.AudioVolume.Sfx = sfxSlider.value;
 
-			if (DataManager.Instance.AudioVolume.Sfx <= -40f)
+			if (AudioDataManager.Instance.AudioVolume.Sfx <= -40f)
 				mainMixer.SetFloat(AudioTypeName(VolType.Sfx), -80);
 			else
-				mainMixer.SetFloat(AudioTypeName(VolType.Sfx), DataManager.Instance.AudioVolume.Sfx);
+				mainMixer.SetFloat(AudioTypeName(VolType.Sfx), AudioDataManager.Instance.AudioVolume.Sfx);
 		}
 
 		//음성 볼륨 조작
 		public void VoiceControl()
 		{
-			DataManager.Instance.AudioVolume.Voice = voiceSlider.value;
+			AudioDataManager.Instance.AudioVolume.Voice = voiceSlider.value;
 
-			if (DataManager.Instance.AudioVolume.Voice <= -40f)
+			if (AudioDataManager.Instance.AudioVolume.Voice <= -40f)
 				mainMixer.SetFloat(AudioTypeName(VolType.Voice), -80);
 			else
-				mainMixer.SetFloat(AudioTypeName(VolType.Voice), DataManager.Instance.AudioVolume.Voice);
+				mainMixer.SetFloat(AudioTypeName(VolType.Voice), AudioDataManager.Instance.AudioVolume.Voice);
 		}
 	}
 }
