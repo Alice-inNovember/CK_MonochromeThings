@@ -5,7 +5,6 @@ using ChessPiece;
 using ClassTemp;
 using Data;
 using UnityEngine;
-using DG.Tweening;
 using ScriptableObject;
 using Random = UnityEngine.Random;
 
@@ -22,12 +21,12 @@ namespace Manager
 		private readonly List<EnemyPiece> _enemyPieces = new ();
 
 		private int _turnToSpawn;
+		private Point _nextEnemySpawnPoint;
 
 		private void Start()
 		{
 			InitPlayer();
 			InitEnemy();
-			_turnToSpawn = 4;
 			GameObject.Find("MapUIManager").GetComponent<MapUIManager>().SetTurnToSpawn(_turnToSpawn);
 		}
 
@@ -51,53 +50,51 @@ namespace Manager
 			if (Point.Dist(_player.pos, p) > 1)
 				return;
 			PlayerMove(p);
+			CheckEnemyEncounter();
 			StartCoroutine(EnemyTurn());
+		}
+
+		private void CheckEnemyEncounter()
+		{
+			EnemyPiece collidedEnemy = null;
+			foreach (var enemy in _enemyPieces.Where(enemy => enemy.pos == _player.pos))
+				collidedEnemy = enemy;
+			if (collidedEnemy != null)
+			{
+				_enemyPieces.Remove(collidedEnemy);
+				collidedEnemy.Destroy();
+				MapManager.Instance.ResetTileColor();
+				HighlightEnemyPathTile();
+			}
 		}
 		
 		private void PlayerMove(Point p)
 		{
 			_player.Move(CalWorldPos(p));
-			MapManager.Instance.UpdateTileState(_player.pos, PieceType.Empty);
 			_player.pos = p;
-			MapManager.Instance.UpdateTileState(_player.pos, PieceType.Player);
-			EnemyPiece collidedEnemy = null;
-			foreach (var enemy in _enemyPieces.Where(enemy => _player.pos == enemy.pos))
-			{
-				collidedEnemy = enemy;
-			}
-			if (collidedEnemy != null)
-			{
-				_enemyPieces.Remove(collidedEnemy);
-				var enemyTransform = collidedEnemy.transform;
-				enemyTransform.DOPause();
-				Destroy(enemyTransform.gameObject);
-			}
 		}
 
 		private void InitEnemy()
 		{
-			MapManager.Instance.ResetTileState();
-			for (int i = 0; i < 10; i++)
+			MapManager.Instance.ResetTileAvailability();
+			for (int i = 0; i < 5; i++)
 			{
 				CreateEnemy();
 			}
-			// CreateEnemy(new Point(0, 0));
-			// CreateEnemy(new Point(0, MapManager.MapSize - 1));
-			// CreateEnemy(new Point(MapManager.MapSize - 1, 0));
-			// CreateEnemy(new Point(MapManager.MapSize - 1, MapManager.MapSize - 1));
+			_turnToSpawn = -1;
 		}
 
 		private void CreateEnemy()
 		{
 			var p = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
-			while (MapManager.Instance.IsMapEmpty(p) == false)
+			while (MapManager.Instance.IsMapAvailable(p) == false)
 				p = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
 			CreateEnemy(p);
 		}
 
 		private void CreateEnemy(Point p)
 		{
-			if (MapManager.Instance.IsMapEmpty(p) == false)
+			if (MapManager.Instance.IsMapAvailable(p) == false)
 				return;
 			var enemy = Instantiate(enemyPrefab).GetComponent<EnemyPiece>();
 			enemy.Init(p);
@@ -107,38 +104,59 @@ namespace Manager
 		IEnumerator EnemyTurn()
 		{
 			yield return new WaitForSeconds(0.5f);
+			MapManager.Instance.ResetTileColor();
 			foreach (var enemy in _enemyPieces)
 			{
 				enemy.Action();
-				yield return new WaitForSeconds(0.5f);
 			}
-			
-			EnemyPiece collidedEnemy = null;
-			foreach (var enemy in _enemyPieces.Where(enemy => enemy.pos == _player.pos))
-				collidedEnemy = enemy;
-			if (collidedEnemy != null)
-			{
-				_enemyPieces.Remove(collidedEnemy);
-				collidedEnemy.Destroy();
-			}
-			
+			yield return new WaitForSeconds(0.5f);
+
+			CheckEnemyEncounter();
 			EnemySpawn();
+			HighlightEnemyPathTile();
 		}
 
 		private void EnemySpawn()
 		{
-			_turnToSpawn--;
-			if (_turnToSpawn <= 0)
+			if (_turnToSpawn == -1)
 			{
-				CreateEnemy();
 				_turnToSpawn = 4;
+				_nextEnemySpawnPoint = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
+				while (MapManager.Instance.IsMapAvailable(_nextEnemySpawnPoint) == false) 
+					_nextEnemySpawnPoint = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
+				MapManager.Instance.SetTileAvailability(_nextEnemySpawnPoint, false);
+				MapManager.Instance.SetTileWarning(_nextEnemySpawnPoint, true);
+			}
+
+			_turnToSpawn--;
+			if (_turnToSpawn == 0)
+			{
+				MapManager.Instance.SetTileAvailability(_nextEnemySpawnPoint, true);
+				MapManager.Instance.SetTileWarning(_nextEnemySpawnPoint, false);
+				CreateEnemy(_nextEnemySpawnPoint);
+
+				_turnToSpawn = 4;
+				_nextEnemySpawnPoint = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
+				while (MapManager.Instance.IsMapAvailable(_nextEnemySpawnPoint) == false) 
+					_nextEnemySpawnPoint = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
+				MapManager.Instance.SetTileAvailability(_nextEnemySpawnPoint, false);
+				MapManager.Instance.SetTileWarning(_nextEnemySpawnPoint, true);
 			}
 			GameObject.Find("MapUIManager").GetComponent<MapUIManager>().SetTurnToSpawn(_turnToSpawn);
+		}
+
+		public void HighlightEnemyPathTile()
+		{
+			foreach (var enemy in  _enemyPieces)
+			{
+				enemy.HighlightAvailableTile();
+			}
 		}
 
 		public void TileSelect(Point p)
 		{
 			MapManager.Instance.ResetTileColor();
+			HighlightEnemyPathTile();
 			if (_player.isSelected)
 			{
 				_player.isSelected = false;

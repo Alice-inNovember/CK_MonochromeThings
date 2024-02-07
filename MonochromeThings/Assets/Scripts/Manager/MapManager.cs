@@ -30,12 +30,14 @@ namespace Manager
 
 		public const int MapSize = 9;
 		private readonly TileData _tile = new ();
-		private readonly PieceType[,] _chessMap = new PieceType[MapSize, MapSize];
+		private readonly bool[,] _chessMap = new bool[MapSize, MapSize];
 
 		private void Start()
 		{
-			ResetTileState();
+			ResetTileAvailability();
 			InitTile();
+			ResetTileColor();
+			ChessGameManager.Instance.HighlightEnemyPathTile();
 		}
 		private void InitTile()
 		{
@@ -55,24 +57,32 @@ namespace Manager
 			}
 		}
 		
-		public void ResetTileState()
+		public void ResetTileAvailability()
 		{
 			for (var y = 0; y < MapSize; y++)
 				for (var x = 0; x < MapSize; x++)
-					UpdateTileState(new Point(x, y), PieceType.Empty);
+					SetTileAvailability(new Point(x, y), true);
 		}
-		public void UpdateTileState(Point p, PieceType type)
+		public void SetTileAvailability(Point p, bool available)
 		{
-			_chessMap[p.x, p.y] = type;
+			if (p.x is < 0 or >= MapSize)
+				return;
+			if (p.y is < 0 or >= MapSize)
+				return;
+			_chessMap[p.x, p.y] = available;
+		}
+		
+		public void SetTileWarning(Point p, bool set)
+		{
+			_tile.TileArray[p.x, p.y].SetWarning(set);
 		}
 
-		public bool IsMapEmpty(Point p)
+		public bool IsMapAvailable(Point p)
 		{
-			return _chessMap[p.x, p.y] == PieceType.Empty;
-		}
-
-		public PieceType GetPieceType(Point p)
-		{
+			if (p.x is < 0 or >= MapSize)
+				return false;
+			if (p.y is < 0 or >= MapSize)
+				return false;
 			return _chessMap[p.x, p.y];
 		}
 
@@ -91,7 +101,7 @@ namespace Manager
 					ChangeTileColor(new Point(x, y), Color.white);
 		}
 
-		private void ChangeTileColor(Point p, Color color)
+		public void ChangeTileColor(Point p, Color color)
 		{
 			if (p.x is < 0 or >= MapSize)
 				return;
