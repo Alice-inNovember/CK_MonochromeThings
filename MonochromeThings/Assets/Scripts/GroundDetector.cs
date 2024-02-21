@@ -6,14 +6,9 @@ using UnityEngine;
 public class GroundDetector : MonoBehaviour
 {
     [SerializeField]
-    private bool _isDetected;
-
+    public LayerMask targetLayer;
+    private bool isDetected;
     Ray ray = new Ray();
-
-    public bool IsDeteted
-    {
-        get { return _isDetected; }   
-    }
 
     [SerializeField]
     private float distance = 2;
@@ -23,37 +18,38 @@ public class GroundDetector : MonoBehaviour
         CapsuleCollider col;
         if (TryGetComponent<CapsuleCollider>(out col))
         {
-            distance = col.height;
+            distance = col.height/2;
         }
 
 
     }
 
 
-    private void Update()
+    public bool DetectGround()
     {
+         
         ray.origin = transform.position;
-        ray.direction = transform.position + (Vector3.down*3f);
-        
-        
-        
-        if (Physics.Raycast(ray, distance+0.2f))
+        ray.direction = -transform.up;
+
+        if (Physics.Raycast(ray, distance + 0.1f, targetLayer.value))
         {
-            _isDetected = true;
+            isDetected = true;
         }
         else
         {
-            _isDetected = false;
+            isDetected = false;
         }
 
-     
+        return isDetected;
+
     }
+
 
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + (Vector3.down*(distance+ 0.1f)));
+        Gizmos.DrawLine(transform.position, -transform.up *(distance+ 0.1f));
     }
 
 

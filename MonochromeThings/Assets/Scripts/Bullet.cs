@@ -9,23 +9,30 @@ public class Bullet : MonoBehaviour
     float bulletSpeed = 5.0f;
     
     static private float eliminateTime = 10.0f;
+    private float visibleTime = 0.2f;
     private float timer = eliminateTime;
 
 
 
-    LayerMask targetLayer;
+    [SerializeField] private LayerMask targetLayer;
 
     private void FixedUpdate()
     {
         this.transform.Translate(dir*Time.fixedDeltaTime* bulletSpeed);
-        if (timer<= 0)
+
+       
+        if (timer <= 0)
         {
             this.gameObject.SetActive(false);
             Destroy(this.gameObject);
         }
+        else if (timer > 0 && timer < eliminateTime - visibleTime && GetComponent<MeshRenderer>().enabled == false)
+        {
+            GetComponent<MeshRenderer>().enabled = true;
+        }
         else
         {
-            timer-=Time.fixedDeltaTime;
+            timer -= Time.fixedDeltaTime;
         }
 
     }
@@ -33,15 +40,17 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         //Debug.Log("OnTriggerEnter(Collider other).Bullet");
-        if (other.gameObject.layer.Equals(targetLayer))
+        if ( 1 << other.gameObject.layer == targetLayer.value)
         {
             Destroy(other.gameObject);
+            Destroy(this.gameObject);
         }
-        Destroy(this.gameObject);
+        
     }
 
     public void Shoot(Vector3 tDir, float tSpeed = 0.0f , int targetLayer = 20)
     {
+        //Debug.Log(gameObject.name + " : Shoot()");
         dir = tDir;
 
         if (tSpeed < 0.0f)
@@ -53,7 +62,8 @@ public class Bullet : MonoBehaviour
             bulletSpeed = tSpeed;
         }
 
-        this.targetLayer = targetLayer;
+        this.targetLayer.value = targetLayer;
+        GetComponent<MeshRenderer>().enabled = false;
 
     }
 
