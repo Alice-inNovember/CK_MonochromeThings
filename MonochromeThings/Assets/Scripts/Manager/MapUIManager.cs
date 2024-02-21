@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Manager
 {
-    public class ChessMapUIManager : MonoBehaviour
+    public class MapUIManager : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI turnToSpawn;
 

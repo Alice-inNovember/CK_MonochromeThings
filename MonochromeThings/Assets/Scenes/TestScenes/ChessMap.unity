@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028353, g: 0.22571383, b: 0.30692253, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -123,6 +123,53 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &40515162
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 40515164}
+  - component: {fileID: 40515163}
+  m_Layer: 0
+  m_Name: EnemyDataManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &40515163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40515162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a20773a766244ff59ebbc15ab7162628, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyDataList:
+  - {fileID: 11400000, guid: 8983b720d2a23594abe18ab854eda240, type: 2}
+  - {fileID: 11400000, guid: fbdea0364b231d844ad45cbe19b62bfa, type: 2}
+--- !u!4 &40515164
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40515162}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &70865665
 GameObject:
   m_ObjectHideFlags: 0
@@ -423,6 +470,55 @@ RectTransform:
   m_AnchoredPosition: {x: 50, y: -50}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &425632281
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 425632282}
+  - component: {fileID: 425632283}
+  m_Layer: 0
+  m_Name: ChessGameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &425632282
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425632281}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &425632283
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 425632281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09480a67cdcb8874592bd74096118c68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 4870752450435689822, guid: c59ae64d855a46c4480ad707f0452c94,
+    type: 3}
+  enemyPrefab: {fileID: 5571361206033929983, guid: fd50e1f29e9b85c4f840e5c438fbeaa8,
+    type: 3}
+  enemySpawnPoint: {fileID: 11400000, guid: 157d78a1876194b61a3eba9afc5335f4, type: 2}
 --- !u!1 &692095819
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,7 +740,7 @@ GameObject:
   - component: {fileID: 1134807862}
   - component: {fileID: 1134807861}
   m_Layer: 0
-  m_Name: ChessMap
+  m_Name: MapManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -662,10 +758,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 175195af24c1bef41af4a5034568a6a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 4870752450435689822, guid: c59ae64d855a46c4480ad707f0452c94,
-    type: 3}
-  enemyPrefab: {fileID: 5571361206033929983, guid: fd50e1f29e9b85c4f840e5c438fbeaa8,
-    type: 3}
   tilePrefab: {fileID: 3256343968177538354, guid: b49b3bf8136f7e941af989733ead0e86,
     type: 3}
 --- !u!4 &1134807862
@@ -694,7 +786,7 @@ GameObject:
   - component: {fileID: 1539651750}
   - component: {fileID: 1539651751}
   m_Layer: 0
-  m_Name: ChessMapUIManager
+  m_Name: MapUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1065,7 +1157,9 @@ SceneRoots:
   m_Roots:
   - {fileID: 2134809326}
   - {fileID: 79024851}
-  - {fileID: 1134807862}
   - {fileID: 248336988}
   - {fileID: 2099665269}
+  - {fileID: 1134807862}
   - {fileID: 1539651750}
+  - {fileID: 425632282}
+  - {fileID: 40515164}
