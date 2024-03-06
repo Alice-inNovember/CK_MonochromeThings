@@ -1,46 +1,46 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using Data;
 using DG.Tweening;
 using Manager;
+using ScriptableObject;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace ChessPiece
 {
 	public class EnemyPiece : MonoBehaviour
 	{
-		private List<Point> _availablePoints;
+		private EnemyPieceData _pieceData;
 		public Point pos;
-		public int typeID = 1;
 
-		public void Init(Point p)
+		public void Init(int enemyID, Point p)
 		{
 			pos = p;
-			_availablePoints = EnemyDataManager.Instance.GetEnemyData(typeID).AvailablePoints;
+			_pieceData = EnemyDataManager.Instance.GetEnemyData(enemyID);
 			transform.position = new Vector3(100, 100, 100);
+			MapManager.Instance.SetTileAvailability(pos, false);
 			Move(ChessGameManager.CalWorldPos(pos), 0.25f);
 		}
 		private Point FindNearestActionsPoint()
 		{
-			var distances = new float[_availablePoints.Capacity];
-			for (var i = 0; i < _availablePoints.Capacity; i++)
-				distances[i] = Point.Dist(ChessGameManager.Instance.GetPlayerPos(), pos + _availablePoints[i]);
+			var distances = new float[_pieceData.AvailablePoints.Capacity];
+			for (var i = 0; i < _pieceData.AvailablePoints.Capacity; i++)
+				distances[i] = Point.Dist(ChessGameManager.Instance.GetPlayerPos(), pos + _pieceData.AvailablePoints[i]);
 			var minIndex = Array.IndexOf(distances, Mathf.Min(distances));
 
-			if (MapManager.Instance.IsMapAvailable(pos + _availablePoints[minIndex]))
-				return pos + _availablePoints[minIndex];
+			if (MapManager.Instance.IsMapAvailable(pos + _pieceData.AvailablePoints[minIndex]))
+				return pos + _pieceData.AvailablePoints[minIndex];
 			
 			//상점 위치로 이동 시도
 			
-			for (var i = 0; i < _availablePoints.Capacity - 1; i++)
+			for (var i = 0; i < _pieceData.AvailablePoints.Capacity - 1; i++)
 			{
-				if (MapManager.Instance.IsMapAvailable(pos + _availablePoints[i]))
-					return pos + _availablePoints[minIndex];
+				if (MapManager.Instance.IsMapAvailable(pos + _pieceData.AvailablePoints[i]))
+					return pos + _pieceData.AvailablePoints[minIndex];
 			}
 			return pos;
 		}
-
+		
 		public void Action()
 		{
 			var p = FindNearestActionsPoint();
@@ -57,10 +57,9 @@ namespace ChessPiece
 
 		public void HighlightAvailableTile()
 		{
-			foreach (var point in _availablePoints)
+			foreach (var point in _pieceData.AvailablePoints.Where(point => MapManager.Instance.IsMapAvailable(pos + point)))
 			{
-				if (MapManager.Instance.IsMapAvailable(pos + point)) 
-					MapManager.Instance.ChangeTileColor(pos + point, new Color(1f, 0.2f, 0.6f));
+				MapManager.Instance.ChangeTileColor(pos + point, new Color(1f, 0.2f, 0.6f));
 			}
 		}
 

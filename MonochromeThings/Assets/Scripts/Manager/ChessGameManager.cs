@@ -6,6 +6,7 @@ using ClassTemp;
 using Data;
 using UnityEngine;
 using ScriptableObject;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Manager
@@ -14,7 +15,7 @@ namespace Manager
 	{
 		[SerializeField] private GameObject playerPrefab;
 		[SerializeField] private GameObject enemyPrefab;
-		[SerializeField] private EnemySpawnPoint enemySpawnPoint;
+		[FormerlySerializedAs("enemySpawnPoint")] [SerializeField] private EnemyPieceSpawnPoint enemyPieceSpawnPoint;
 
 		private PieceType _turn;
 		private PlayerPiece _player;
@@ -79,25 +80,25 @@ namespace Manager
 			MapManager.Instance.ResetTileAvailability();
 			for (int i = 0; i < 5; i++)
 			{
-				CreateEnemy();
+				CreateEnemy(0);
 			}
 			_turnToSpawn = -1;
 		}
 
-		private void CreateEnemy()
+		private void CreateEnemy(int enemyID)
 		{
-			var p = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
+			var p = enemyPieceSpawnPoint.SpawnPoints[Random.Range(0, enemyPieceSpawnPoint.SpawnPoints.Capacity - 1)];
 			while (MapManager.Instance.IsMapAvailable(p) == false)
-				p = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
-			CreateEnemy(p);
+				p = enemyPieceSpawnPoint.SpawnPoints[Random.Range(0, enemyPieceSpawnPoint.SpawnPoints.Capacity - 1)];
+			CreateEnemy(enemyID, p);
 		}
 
-		private void CreateEnemy(Point p)
+		private void CreateEnemy(int enemyID, Point p)
 		{
 			if (MapManager.Instance.IsMapAvailable(p) == false)
 				return;
 			var enemy = Instantiate(enemyPrefab).GetComponent<EnemyPiece>();
-			enemy.Init(p);
+			enemy.Init(enemyID, p);
 			_enemyPieces.Add(enemy);
 		}
 
@@ -116,29 +117,33 @@ namespace Manager
 			HighlightEnemyPathTile();
 		}
 
+		private Point CalNextSpawnPoint()
+		{
+			_nextEnemySpawnPoint = enemyPieceSpawnPoint.SpawnPoints[Random.Range(0, enemyPieceSpawnPoint.SpawnPoints.Capacity - 1)];
+			while (MapManager.Instance.IsMapAvailable(_nextEnemySpawnPoint) == false) 
+				_nextEnemySpawnPoint = enemyPieceSpawnPoint.SpawnPoints[Random.Range(0, enemyPieceSpawnPoint.SpawnPoints.Capacity - 1)];
+			return _nextEnemySpawnPoint;
+		}
+		
 		private void EnemySpawn()
 		{
 			if (_turnToSpawn == -1)
 			{
 				_turnToSpawn = 4;
-				_nextEnemySpawnPoint = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
-				while (MapManager.Instance.IsMapAvailable(_nextEnemySpawnPoint) == false) 
-					_nextEnemySpawnPoint = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
+				_nextEnemySpawnPoint = CalNextSpawnPoint();
 				MapManager.Instance.SetTileAvailability(_nextEnemySpawnPoint, false);
 				MapManager.Instance.SetTileWarning(_nextEnemySpawnPoint, true);
 			}
-
 			_turnToSpawn--;
 			if (_turnToSpawn == 0)
 			{
 				MapManager.Instance.SetTileAvailability(_nextEnemySpawnPoint, true);
 				MapManager.Instance.SetTileWarning(_nextEnemySpawnPoint, false);
-				CreateEnemy(_nextEnemySpawnPoint);
+				//나중에 수정
+				CreateEnemy(0, _nextEnemySpawnPoint);
 
 				_turnToSpawn = 4;
-				_nextEnemySpawnPoint = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
-				while (MapManager.Instance.IsMapAvailable(_nextEnemySpawnPoint) == false) 
-					_nextEnemySpawnPoint = enemySpawnPoint.SpawnPoints[Random.Range(0, enemySpawnPoint.SpawnPoints.Capacity - 1)];
+				_nextEnemySpawnPoint = CalNextSpawnPoint();
 				MapManager.Instance.SetTileAvailability(_nextEnemySpawnPoint, false);
 				MapManager.Instance.SetTileWarning(_nextEnemySpawnPoint, true);
 			}

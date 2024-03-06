@@ -48,7 +48,7 @@ namespace Manager
 				for (var y = 0; y < MapSize; y++)
 				{
 					_tile.ObjArray[x, y] = Instantiate(tilePrefab, this.transform);
-					_tile.ObjArray[x, y].transform.position = ChessGameManager.CalWorldPos(new Point(x, y)).ToVector2();
+					_tile.ObjArray[x, y].transform.position = ChessGameManager.CalWorldPos(new Point(x, y)).ToVector3() + new Vector3(0, 0, 0.51f);
 					_tile.ObjArray[x, y].name = "Tile " + "[" + x + "," + y + "]";
 
 					_tile.TileArray[x, y] = _tile.ObjArray[x, y].GetComponent<Tile>();
@@ -56,7 +56,7 @@ namespace Manager
 				}
 			}
 		}
-		
+
 		public void ResetTileAvailability()
 		{
 			for (var y = 0; y < MapSize; y++)
@@ -71,7 +71,7 @@ namespace Manager
 				return;
 			_chessMap[p.x, p.y] = available;
 		}
-		
+
 		public void SetTileWarning(Point p, bool set)
 		{
 			_tile.TileArray[p.x, p.y].SetWarning(set);

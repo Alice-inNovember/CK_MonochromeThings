@@ -9,19 +9,19 @@ namespace Manager
 {
 	public class EnemyDataManager : MonoBehaviourSingleton<EnemyDataManager>
 	{
-		[SerializeField] private List<EnemyData> enemyDataList;
-		private Dictionary<int, EnemyData> _enemyDataDictionary;
+		[SerializeField] private List<EnemyPieceData> enemyDataList;
+		private Dictionary<int, EnemyPieceData> _enemyDataDictionary;
 
 		private void Start()
 		{
-			_enemyDataDictionary = new Dictionary<int, EnemyData>();
+			_enemyDataDictionary = new Dictionary<int, EnemyPieceData>();
 			foreach (var data in enemyDataList)
 			{
 				_enemyDataDictionary.Add(data.Id, data);
 			}
 		}
 
-		public EnemyData GetEnemyData(int enemyID)
+		public EnemyPieceData GetEnemyData(int enemyID)
 		{
 			return _enemyDataDictionary[enemyID];
 		}
