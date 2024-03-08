@@ -10,35 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a765cd9448489bb49921b672e2fdbb84, type: 3}
-  m_Name: 03 Anger
+  m_Name: 00 Meme
   m_EditorClassIdentifier: 
-  id: 3
-  enemyName: Anger
-  uniqueNbr: 2
-  minTurnToMove: 0
-  maxTurnToMove: 0
+  id: 0
+  enemyName: Meme
+  uniqueNbr: 1
+  minTurnToMove: 2
+  maxTurnToMove: 3
   availablePoints:
-  - x: -2
-    y: -1
-  - x: -2
-    y: 0
-  - x: -2
-    y: 1
-  - x: -1
-    y: -2
-  - x: -1
-    y: 2
   - x: 0
-    y: -2
-  - x: 0
-    y: 2
-  - x: 1
-    y: -2
-  - x: 1
-    y: 2
-  - x: 2
-    y: -1
-  - x: 2
-    y: 0
-  - x: 2
     y: 1
+  - x: 0
+    y: -1
+  - x: 1
+    y: 0
+  - x: -1
+    y: 0

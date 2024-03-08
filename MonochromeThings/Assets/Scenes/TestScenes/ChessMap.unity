@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028353, g: 0.22571383, b: 0.30692253, a: 1}
+  m_IndirectSpecularColor: {r: 0.1762805, g: 0.22062631, b: 0.30295116, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -155,6 +155,10 @@ MonoBehaviour:
   enemyDataList:
   - {fileID: 11400000, guid: 8983b720d2a23594abe18ab854eda240, type: 2}
   - {fileID: 11400000, guid: fbdea0364b231d844ad45cbe19b62bfa, type: 2}
+  - {fileID: 11400000, guid: 083d6e7eab3874143b8b507a9cb34ee9, type: 2}
+  - {fileID: 11400000, guid: d404072386386dc44ab1783f2e9bdf1d, type: 2}
+  - {fileID: 11400000, guid: 7e6402573bef075498289016a075fb57, type: 2}
+  - {fileID: 11400000, guid: 8f1eb933a0c93574c999891cf0090428, type: 2}
 --- !u!4 &40515164
 Transform:
   m_ObjectHideFlags: 0
@@ -275,7 +279,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Intensity: 3
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -333,13 +337,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 79024849}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: 0.51899153, y: -0.21828574, z: 0.13906334, w: 0.81465364}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 65, y: -30, z: 0}
 --- !u!114 &79024852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -362,7 +366,7 @@ MonoBehaviour:
   m_ShadowRenderingLayers: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
-  m_SoftShadowQuality: 0
+  m_SoftShadowQuality: 3
 --- !u!1 &248336985
 GameObject:
   m_ObjectHideFlags: 0
@@ -518,7 +522,8 @@ MonoBehaviour:
     type: 3}
   enemyPrefab: {fileID: 5571361206033929983, guid: fd50e1f29e9b85c4f840e5c438fbeaa8,
     type: 3}
-  enemySpawnPoint: {fileID: 11400000, guid: 157d78a1876194b61a3eba9afc5335f4, type: 2}
+  enemyPieceSpawnPoint: {fileID: 11400000, guid: 157d78a1876194b61a3eba9afc5335f4,
+    type: 2}
 --- !u!1 &692095819
 GameObject:
   m_ObjectHideFlags: 0
@@ -758,7 +763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 175195af24c1bef41af4a5034568a6a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilePrefab: {fileID: 3256343968177538354, guid: b49b3bf8136f7e941af989733ead0e86,
+  tilePrefab: {fileID: 3256343968177538354, guid: 9145b1fb854519d4da695612d9550834,
     type: 3}
 --- !u!4 &1134807862
 Transform:
@@ -1010,6 +1015,7 @@ GameObject:
   - component: {fileID: 2134809324}
   - component: {fileID: 2134809327}
   - component: {fileID: 2134809328}
+  - component: {fileID: 2134809329}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1084,13 +1090,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2134809323}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalRotation: {x: -0.13052624, y: 0, z: 0, w: 0.9914449}
+  m_LocalPosition: {x: 0, y: -3.2, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -15, y: 0, z: 0}
 --- !u!114 &2134809327
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1151,6 +1157,22 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_MaxRayIntersections: 0
+--- !u!114 &2134809329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2134809323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c49b4cc203aa6414fae5c798d1d0e7d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EventMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_MaxRayIntersections: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1159,7 +1181,7 @@ SceneRoots:
   - {fileID: 79024851}
   - {fileID: 248336988}
   - {fileID: 2099665269}
-  - {fileID: 1134807862}
   - {fileID: 1539651750}
+  - {fileID: 1134807862}
   - {fileID: 425632282}
   - {fileID: 40515164}
