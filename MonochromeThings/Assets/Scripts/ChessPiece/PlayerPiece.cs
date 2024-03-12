@@ -8,7 +8,6 @@ namespace ChessPiece
 	public class PlayerPiece : MonoBehaviour
 	{
 		public Point pos;
-		public bool isSelected;
 		private bool _isMoving;
 
 		private void Start()
@@ -30,6 +29,14 @@ namespace ChessPiece
 			if (_isMoving == true)
 				return;
 			ChessGameManager.Instance.OnPlayerClick();
+		}
+		
+		public void HighlightAvailableTile()
+		{
+			MapManager.Instance.HighlightPath(pos + new Point(0, 1));
+			MapManager.Instance.HighlightPath(pos + new Point(0, -1));
+			MapManager.Instance.HighlightPath(pos + new Point(1, 0));
+			MapManager.Instance.HighlightPath(pos + new Point(-1, 0));
 		}
 	}
 }

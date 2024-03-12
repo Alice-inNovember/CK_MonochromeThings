@@ -26,7 +26,7 @@ namespace ChessPiece
 		{
 			warningSprite.SetActive(false);
 			var position = transform.position;
-			transform.DOLocalMove(new Vector3(position.x, position.y, Random.Range(0.51f, 0.71f)), 1f);
+			transform.DOLocalMove(new Vector3(position.x, position.y, Random.Range(0.51f, 0.61f)), 1f);
 		}
 		public void Init(Point pos)
 		{

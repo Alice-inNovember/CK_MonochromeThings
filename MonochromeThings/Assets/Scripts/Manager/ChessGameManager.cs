@@ -18,8 +18,9 @@ namespace Manager
 		[FormerlySerializedAs("enemySpawnPoint")] [SerializeField] private EnemyPieceSpawnPoint enemyPieceSpawnPoint;
 
 		private PieceType _turn;
+		private bool _isPlayerSelected;
 		private PlayerPiece _player;
-		private readonly List<EnemyPiece> _enemyPieces = new ();
+		private readonly List<EntityPiece> _enemyPieces = new ();
 
 		private int _turnToSpawn;
 		private Point _nextEnemySpawnPoint;
@@ -36,43 +37,7 @@ namespace Manager
 			_turn = PieceType.Player;
 			_player = Instantiate(playerPrefab, this.transform).GetComponent<PlayerPiece>();
 			_player.pos = new Point(MapManager.MapSize / 2, MapManager.MapSize / 2);
-			_player.isSelected = false;
-		}
-
-		public Point GetPlayerPos()
-		{
-			return _player.pos;
-		}
-		
-		private void PlayerTurn(Point p)
-		{
-			if (_turn == PieceType.Enemy)
-				return;
-			if (Point.Dist(_player.pos, p) > 1)
-				return;
-			PlayerMove(p);
-			CheckEnemyEncounter();
-			StartCoroutine(EnemyTurn());
-		}
-
-		private void CheckEnemyEncounter()
-		{
-			EnemyPiece collidedEnemy = null;
-			foreach (var enemy in _enemyPieces.Where(enemy => enemy.pos == _player.pos))
-				collidedEnemy = enemy;
-			if (collidedEnemy != null)
-			{
-				_enemyPieces.Remove(collidedEnemy);
-				collidedEnemy.Destroy();
-				MapManager.Instance.ResetTileColor();
-				HighlightEnemyPathTile();
-			}
-		}
-		
-		private void PlayerMove(Point p)
-		{
-			_player.Move(CalWorldPos(p));
-			_player.pos = p;
+			_isPlayerSelected = false;
 		}
 
 		private void InitEnemy()
@@ -80,7 +45,7 @@ namespace Manager
 			MapManager.Instance.ResetTileAvailability();
 			for (int i = 0; i < 5; i++)
 			{
-				CreateEnemy(0);
+				CreateEnemy(4);
 			}
 			_turnToSpawn = -1;
 		}
@@ -97,10 +62,76 @@ namespace Manager
 		{
 			if (MapManager.Instance.IsMapAvailable(p) == false)
 				return;
-			var enemy = Instantiate(enemyPrefab).GetComponent<EnemyPiece>();
-			enemy.Init(enemyID, p);
+			var enemy = Instantiate(enemyPrefab).GetComponent<EntityPiece>();
+			enemy.Init(p);
 			_enemyPieces.Add(enemy);
 		}
+
+		public void TileSelect(Point p)
+		{
+			if (_turn == PieceType.Enemy)
+				return;
+			if (_isPlayerSelected)
+				PlayerAction(p);
+			MapManager.Instance.ResetTileColor();
+		}
+		
+		public void OnPlayerClick()
+		{
+			if (_turn == PieceType.Enemy)
+				return;
+			_isPlayerSelected = true;
+			MapManager.Instance.ResetTileColor();
+			_player.HighlightAvailableTile();
+		}
+
+		public void OnEntityClick(EntityPiece piece)
+		{
+			if (_turn == PieceType.Enemy)
+				return;
+			if (_isPlayerSelected)
+				TileSelect(piece.pos);
+			else
+			{
+				MapManager.Instance.ResetTileColor();
+				piece.HighlightAvailableTile();
+			}
+		}
+
+		public Point GetPlayerPos()
+		{
+			return _player.pos;
+		}
+
+		private void PlayerAction(Point p)
+		{
+			_isPlayerSelected = false;
+			if (Point.Dist(_player.pos, p) > 1)
+				return;
+			PlayerMove(p);
+			CheckEnemyEncounter();
+			StartCoroutine(EnemyTurn());
+		}
+
+		private void CheckEnemyEncounter()
+		{
+			EntityPiece collidedEnemy = null;
+			foreach (var enemy in _enemyPieces.Where(enemy => enemy.pos == _player.pos))
+				collidedEnemy = enemy;
+			if (collidedEnemy != null)
+			{
+				_enemyPieces.Remove(collidedEnemy);
+				collidedEnemy.Destroy();
+			}
+		}
+		
+		private void PlayerMove(Point p)
+		{
+			_player.Move(CalWorldPos(p));
+			_player.pos = p;
+		}
+
+		
 
 		IEnumerator EnemyTurn()
 		{
@@ -114,7 +145,6 @@ namespace Manager
 
 			CheckEnemyEncounter();
 			EnemySpawn();
-			HighlightEnemyPathTile();
 		}
 
 		private Point CalNextSpawnPoint()
@@ -148,31 +178,6 @@ namespace Manager
 				MapManager.Instance.SetTileWarning(_nextEnemySpawnPoint, true);
 			}
 			GameObject.Find("MapUIManager").GetComponent<MapUIManager>().SetTurnToSpawn(_turnToSpawn);
-		}
-
-		public void HighlightEnemyPathTile()
-		{
-			foreach (var enemy in  _enemyPieces)
-			{
-				enemy.HighlightAvailableTile();
-			}
-		}
-
-		public void TileSelect(Point p)
-		{
-			MapManager.Instance.ResetTileColor();
-			HighlightEnemyPathTile();
-			if (_player.isSelected)
-			{
-				_player.isSelected = false;
-				PlayerTurn(p);
-			}
-		}
-
-		public void OnPlayerClick()
-		{
-			_player.isSelected = true;
-			MapManager.Instance.HighlightAvailableTile(_player.pos);
 		}
 
 		public static Point CalWorldPos(Point p)

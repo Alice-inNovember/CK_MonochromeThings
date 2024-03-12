@@ -37,7 +37,6 @@ namespace Manager
 			ResetTileAvailability();
 			InitTile();
 			ResetTileColor();
-			ChessGameManager.Instance.HighlightEnemyPathTile();
 		}
 		private void InitTile()
 		{
@@ -86,12 +85,9 @@ namespace Manager
 			return _chessMap[p.x, p.y];
 		}
 
-		public void HighlightAvailableTile(Point p)
+		public void HighlightPath(Point p)
 		{
-			ChangeTileColor(new Point(p.x + 1, p.y), new Color(0.5f, 1, 0.5f));
-			ChangeTileColor(new Point(p.x - 1, p.y), new Color(0.5f, 1, 0.5f));
-			ChangeTileColor(new Point(p.x, p.y + 1), new Color(0.5f, 1, 0.5f));
-			ChangeTileColor(new Point(p.x, p.y - 1), new Color(0.5f, 1, 0.5f));
+			ChangeTileColor(new Point(p.x, p.y), new Color(0.5f, 1, 0.5f));
 		}
 
 		public void ResetTileColor()
