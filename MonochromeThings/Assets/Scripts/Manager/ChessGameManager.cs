@@ -6,6 +6,7 @@ using ClassTemp;
 using Data;
 using UnityEngine;
 using ScriptableObject;
+using UnityEditor;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
@@ -109,43 +110,67 @@ namespace Manager
 			if (Point.Dist(_player.pos, p) > 1)
 				return;
 			PlayerMove(p);
-			CheckEnemyEncounter();
+			var encounter = CheckEnemyEncounter();
+			if (encounter != null)
+			{
+				_enemyPieces.Remove(encounter);
+				encounter.Destroy();
+			}
 			StartCoroutine(EnemyTurn());
 		}
 
-		private void CheckEnemyEncounter()
+		private EntityPiece CheckEnemyEncounter()
 		{
-			EntityPiece collidedEnemy = null;
+			EntityPiece encounter = null;
 			foreach (var enemy in _enemyPieces.Where(enemy => enemy.pos == _player.pos))
-				collidedEnemy = enemy;
-			if (collidedEnemy != null)
+				encounter = enemy;
+			return encounter;
+		}
+
+		private EntityPiece EntityMove(int entityID)
+		{
+			EntityPiece encounter = null;
+
+			foreach (var enemy in _enemyPieces)
 			{
-				_enemyPieces.Remove(collidedEnemy);
-				collidedEnemy.Destroy();
+				if (enemy.GetEntityName() != EntityDataManager.Instance.GetEntityData(0).Name)
+					enemy.Action();
+				encounter = CheckEnemyEncounter();
+				if (encounter != null)
+					MapManager.Instance.SetTileAvailability(encounter.pos, false);
 			}
+			return encounter;
 		}
 		
+		IEnumerator EnemyTurn()
+		{
+			EntityPiece encounter = null;
+			yield return new WaitForSeconds(0.5f);
+			MapManager.Instance.ResetTileColor();
+
+			encounter = EntityMove(0);
+			encounter = EntityMove(2);
+			encounter = EntityMove(4);
+			encounter = EntityMove(1);
+			encounter = EntityMove(5);
+			encounter = EntityMove(3);
+			yield return new WaitForSeconds(0.5f);
+
+			//전투
+			if (encounter != null)
+			{
+				MapManager.Instance.SetTileAvailability(encounter.pos, true);
+				_enemyPieces.Remove(encounter);
+				encounter.Destroy();
+			}
+			EnemySpawn();
+		}
 		private void PlayerMove(Point p)
 		{
 			_player.Move(CalWorldPos(p));
 			_player.pos = p;
 		}
 
-		
-
-		IEnumerator EnemyTurn()
-		{
-			yield return new WaitForSeconds(0.5f);
-			MapManager.Instance.ResetTileColor();
-			foreach (var enemy in _enemyPieces)
-			{
-				enemy.Action();
-			}
-			yield return new WaitForSeconds(0.5f);
-
-			CheckEnemyEncounter();
-			EnemySpawn();
-		}
 
 		private Point CalNextSpawnPoint()
 		{

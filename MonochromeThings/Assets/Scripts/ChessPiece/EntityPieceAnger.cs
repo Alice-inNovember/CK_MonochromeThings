@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Linq;
 using Data;
-using DG.Tweening;
 using Manager;
-using ScriptableObject;
 using UnityEngine;
 
 namespace ChessPiece
@@ -13,6 +10,7 @@ namespace ChessPiece
 		protected override Point CalculateActionsPoint()
 		{
 			//플레이어와 Accept(킹) 사이의 거리가 2.8초과면 리턴
+			
 			var distances = new float[pieceData.AvailablePoints.Capacity];
 			for (var i = 0; i < pieceData.AvailablePoints.Capacity; i++)
 				distances[i] = Point.Dist(ChessGameManager.Instance.GetPlayerPos(), pos + pieceData.AvailablePoints[i]);

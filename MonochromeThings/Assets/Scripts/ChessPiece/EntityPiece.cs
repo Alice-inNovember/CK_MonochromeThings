@@ -4,6 +4,7 @@ using Data;
 using DG.Tweening;
 using Manager;
 using ScriptableObject;
+using TMPro;
 using UnityEngine;
 
 namespace ChessPiece
@@ -11,6 +12,7 @@ namespace ChessPiece
 	public class EntityPiece : MonoBehaviour
 	{
 		[SerializeField] protected EntityPieceData pieceData;
+		[SerializeField] protected TextMeshProUGUI turnToMoveText;
 		protected Point OriginPos;
 
 		public int turnToMove;
@@ -75,6 +77,11 @@ namespace ChessPiece
 		{
 			transform.DOPause();
 			transform.DOMove(new Vector3(p.x, p.y, 0), duration).SetEase(Ease.InOutSine);
+		}
+
+		public string GetEntityName()
+		{
+			return pieceData.Name;
 		}
 
 		public virtual void Destroy()

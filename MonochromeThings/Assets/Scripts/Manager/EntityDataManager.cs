@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Manager
 {
-	public class EnemyDataManager : MonoBehaviourSingleton<EnemyDataManager>
+	public class EntityDataManager : MonoBehaviourSingleton<EntityDataManager>
 	{
 		[SerializeField] private List<EntityPieceData> enemyDataList;
 		private Dictionary<int, EntityPieceData> _enemyDataDictionary;
@@ -21,7 +21,7 @@ namespace Manager
 			}
 		}
 
-		public EntityPieceData GetEnemyData(int enemyID)
+		public EntityPieceData GetEntityData(int enemyID)
 		{
 			return _enemyDataDictionary[enemyID];
 		}
