@@ -21,16 +21,16 @@ namespace Manager
 		private PieceType _turn;
 		private bool _isPlayerSelected;
 		private PlayerPiece _player;
-		private readonly List<EntityPiece> _enemyPieces = new ();
+		private readonly List<EntityPiece> _entityPieces = new ();
 
-		private int _turnToSpawn;
+		private int _remainingTurnUntilNextWave;
 		private Point _nextEnemySpawnPoint;
 
 		private void Start()
 		{
 			InitPlayer();
 			InitEnemy();
-			GameObject.Find("MapUIManager").GetComponent<MapUIManager>().SetTurnToSpawn(_turnToSpawn);
+			GameObject.Find("MapUIManager").GetComponent<MapUIManager>().SetTurnToSpawn(_remainingTurnUntilNextWave);
 		}
 
 		private void InitPlayer()
@@ -46,26 +46,33 @@ namespace Manager
 			MapManager.Instance.ResetTileAvailability();
 			for (int i = 0; i < 5; i++)
 			{
-				CreateEnemy(4);
+				CreateEnemy(EntityType.Meme);
 			}
-			_turnToSpawn = -1;
+			_remainingTurnUntilNextWave = -1;
 		}
 
-		private void CreateEnemy(int enemyID)
+		private void CreateEnemy(EntityType type)
 		{
 			var p = enemyPieceSpawnPoint.SpawnPoints[Random.Range(0, enemyPieceSpawnPoint.SpawnPoints.Capacity - 1)];
 			while (MapManager.Instance.IsMapAvailable(p) == false)
 				p = enemyPieceSpawnPoint.SpawnPoints[Random.Range(0, enemyPieceSpawnPoint.SpawnPoints.Capacity - 1)];
-			CreateEnemy(enemyID, p);
+			CreateEnemy(type, p);
 		}
 
-		private void CreateEnemy(int enemyID, Point p)
+		private void CreateEnemy(EntityType type, Point p)
 		{
 			if (MapManager.Instance.IsMapAvailable(p) == false)
 				return;
 			var enemy = Instantiate(enemyPrefab).GetComponent<EntityPiece>();
-			enemy.Init(p);
-			_enemyPieces.Add(enemy);
+			enemy.Init(type, p);
+			_entityPieces.Add(enemy);
+		}
+
+		private void CreateEnemy(EntityType type, int uniqueNbr, EntityPiece subject)
+		{
+			var enemy = Instantiate(enemyPrefab).GetComponent<EntityPiece>();
+			enemy.Init(type, uniqueNbr, subject);
+			_entityPieces.Add(enemy);
 		}
 
 		public void TileSelect(Point p)
@@ -91,7 +98,7 @@ namespace Manager
 			if (_turn == PieceType.Enemy)
 				return;
 			if (_isPlayerSelected)
-				TileSelect(piece.pos);
+				TileSelect(piece.Pos);
 			else
 			{
 				MapManager.Instance.ResetTileColor();
@@ -104,6 +111,11 @@ namespace Manager
 			return _player.pos;
 		}
 
+		public EntityPiece GetEntity(Point pos)
+		{
+			return _entityPieces.FirstOrDefault(entity => entity.Pos == pos);
+		}
+
 		private void PlayerAction(Point p)
 		{
 			_isPlayerSelected = false;
@@ -113,7 +125,7 @@ namespace Manager
 			var encounter = CheckEnemyEncounter();
 			if (encounter != null)
 			{
-				_enemyPieces.Remove(encounter);
+				_entityPieces.Remove(encounter);
 				encounter.Destroy();
 			}
 			StartCoroutine(EnemyTurn());
@@ -122,47 +134,78 @@ namespace Manager
 		private EntityPiece CheckEnemyEncounter()
 		{
 			EntityPiece encounter = null;
-			foreach (var enemy in _enemyPieces.Where(enemy => enemy.pos == _player.pos))
+			foreach (var enemy in _entityPieces.Where(enemy => enemy.Pos == _player.pos))
 				encounter = enemy;
 			return encounter;
 		}
 
-		private EntityPiece EntityMove(int entityID)
+		private void EntityPromotion(EntityPiece reference, EntityPiece subject)
 		{
-			EntityPiece encounter = null;
-
-			foreach (var enemy in _enemyPieces)
+			if (subject.Type is EntityType.Accept or EntityType.Depress)
 			{
-				if (enemy.GetEntityName() != EntityDataManager.Instance.GetEntityData(0).Name)
-					enemy.Action();
-				encounter = CheckEnemyEncounter();
-				if (encounter != null)
-					MapManager.Instance.SetTileAvailability(encounter.pos, false);
+				_entityPieces.Remove(reference);
+				reference.Destroy();
+				return;
 			}
-			return encounter;
+			if (subject.UniqueNbr + reference.UniqueNbr >= 6)
+				CreateEnemy(EntityType.Depress, subject.Pos);
+			else if (subject.UniqueNbr > reference.UniqueNbr)
+				CreateEnemy(subject.Type, subject.UniqueNbr + reference.UniqueNbr, subject);
+			else if (subject.UniqueNbr < reference.UniqueNbr)
+				CreateEnemy(reference.Type, subject.UniqueNbr + reference.UniqueNbr, subject);
+			else
+			{
+				if (reference.Type == subject.Type)
+					CreateEnemy(reference.Type, subject.UniqueNbr + reference.UniqueNbr, subject);
+				else
+				{
+					//구현 해야함
+					//임시
+					CreateEnemy(reference.Type, subject.UniqueNbr + reference.UniqueNbr, subject);
+				}
+			}
+			_entityPieces.Remove(reference);
+			_entityPieces.Remove(subject);
+			reference.Destroy();
+			subject.Destroy();
 		}
-		
+
+		private void EntityMove(EntityType type)
+		{
+			for (int i = 0; i < _entityPieces.Count; i++)
+			{
+				if (_entityPieces[i].Type != type || _entityPieces[i].HasMoved == true)
+					continue;
+				//이동 및 플레이어와의 충돌처리, HasMoved = true로 변경, 자신이 침범한 엔티티 반환
+				var entityEncounter = _entityPieces[i].Action();
+				if (entityEncounter == null)
+					continue;
+				EntityPromotion(_entityPieces[i], entityEncounter);
+				i = 0;
+			}
+		}
+
 		IEnumerator EnemyTurn()
 		{
-			EntityPiece encounter = null;
 			yield return new WaitForSeconds(0.5f);
 			MapManager.Instance.ResetTileColor();
 
-			encounter = EntityMove(0);
-			encounter = EntityMove(2);
-			encounter = EntityMove(4);
-			encounter = EntityMove(1);
-			encounter = EntityMove(5);
-			encounter = EntityMove(3);
+			EntityMove(EntityType.Meme);
+			EntityMove(EntityType.Anger);
+			EntityMove(EntityType.Accept);
+			EntityMove(EntityType.Denial);
+			EntityMove(EntityType.Depress);
+			EntityMove(EntityType.Bargain);
+
+			//HasMoved 초기화
+			foreach (var entity in _entityPieces)
+				entity.HasMoved = false;
+
 			yield return new WaitForSeconds(0.5f);
 
 			//전투
-			if (encounter != null)
-			{
-				MapManager.Instance.SetTileAvailability(encounter.pos, true);
-				_enemyPieces.Remove(encounter);
-				encounter.Destroy();
-			}
+
+			//스폰
 			EnemySpawn();
 		}
 		private void PlayerMove(Point p)
@@ -171,7 +214,6 @@ namespace Manager
 			_player.pos = p;
 		}
 
-
 		private Point CalNextSpawnPoint()
 		{
 			_nextEnemySpawnPoint = enemyPieceSpawnPoint.SpawnPoints[Random.Range(0, enemyPieceSpawnPoint.SpawnPoints.Capacity - 1)];
@@ -179,30 +221,10 @@ namespace Manager
 				_nextEnemySpawnPoint = enemyPieceSpawnPoint.SpawnPoints[Random.Range(0, enemyPieceSpawnPoint.SpawnPoints.Capacity - 1)];
 			return _nextEnemySpawnPoint;
 		}
-		
+
 		private void EnemySpawn()
 		{
-			if (_turnToSpawn == -1)
-			{
-				_turnToSpawn = 4;
-				_nextEnemySpawnPoint = CalNextSpawnPoint();
-				MapManager.Instance.SetTileAvailability(_nextEnemySpawnPoint, false);
-				MapManager.Instance.SetTileWarning(_nextEnemySpawnPoint, true);
-			}
-			_turnToSpawn--;
-			if (_turnToSpawn == 0)
-			{
-				MapManager.Instance.SetTileAvailability(_nextEnemySpawnPoint, true);
-				MapManager.Instance.SetTileWarning(_nextEnemySpawnPoint, false);
-				//나중에 수정
-				CreateEnemy(0, _nextEnemySpawnPoint);
-
-				_turnToSpawn = 4;
-				_nextEnemySpawnPoint = CalNextSpawnPoint();
-				MapManager.Instance.SetTileAvailability(_nextEnemySpawnPoint, false);
-				MapManager.Instance.SetTileWarning(_nextEnemySpawnPoint, true);
-			}
-			GameObject.Find("MapUIManager").GetComponent<MapUIManager>().SetTurnToSpawn(_turnToSpawn);
+			
 		}
 
 		public static Point CalWorldPos(Point p)
