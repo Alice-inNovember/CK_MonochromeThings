@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 65367c01788c43318e2a6b7268723a4b, type: 3}
-  m_Name: S2 WaveInfo
+  m_Name: S2 Info
   m_EditorClassIdentifier: 
   stageNbr: 2
   waveSpawnCnt: 03000000040000000500000006000000070000000800000009000000

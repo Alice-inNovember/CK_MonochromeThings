@@ -14,7 +14,7 @@ namespace Manager
 	public class ChessDataManager : MonoBehaviourSingleton<ChessDataManager>
 	{
 		[SerializeField] private List<EntityData> entityDataList;
-		[SerializeField] private List<StageWaveInfo> stageWaveInfoList;
+		[SerializeField] private List<StageInfo> stageInfoList;
 
 		public EntityData GetEntityData(EntityType type)
 		{
@@ -36,6 +36,29 @@ namespace Manager
 				EntityType.ShelterCaptured => new ShelterCaptured(),
 				_ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
 			};
+		}
+
+		public StageInfo GetStageInfo(int stageNbr)
+		{
+			if (stageNbr < 0 || stageNbr > (stageInfoList.Count - 1))
+				return null;
+			return stageInfoList[stageNbr];
+		}
+
+		public WaveInfo GetWaveInfo(int stageNbr, int waveNbr)
+		{
+			var stageInfo = GetStageInfo(stageNbr);
+			if (stageInfo == null || waveNbr < 0)
+				return null;
+
+			var waveInfoList = stageInfo.WaveInfoList;
+			if (waveNbr < waveInfoList.Count)
+				return waveInfoList[waveNbr];
+
+			var waveInfo = UnityEngine.ScriptableObject.CreateInstance<WaveInfo>();
+			waveInfo.WaveSpawnInfoList = waveInfoList.Last().WaveSpawnInfoList.ToList();
+			waveInfo.TotalSpawnCnt = ((waveNbr - waveInfoList.Count) * stageInfo.SpawnCntIncrement) + waveInfoList.Last().TotalSpawnCnt;
+			return waveInfo;
 		}
 	}
 }

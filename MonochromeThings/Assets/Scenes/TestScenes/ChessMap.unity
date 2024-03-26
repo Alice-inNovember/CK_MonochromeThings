@@ -515,7 +515,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerPrefab: {fileID: 4870752450435689822, guid: c59ae64d855a46c4480ad707f0452c94,
     type: 3}
-  enemyPrefab: {fileID: 5571361206033929983, guid: c381b98a127b59b4b945261465d47938,
+  enemyPrefab: {fileID: 5571361206033929983, guid: fd50e1f29e9b85c4f840e5c438fbeaa8,
     type: 3}
   enemyPieceSpawnPoint: {fileID: 11400000, guid: 157d78a1876194b61a3eba9afc5335f4,
     type: 2}
@@ -765,7 +765,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d404072386386dc44ab1783f2e9bdf1d, type: 2}
   - {fileID: 11400000, guid: 7e6402573bef075498289016a075fb57, type: 2}
   - {fileID: 11400000, guid: 8f1eb933a0c93574c999891cf0090428, type: 2}
-  stageWaveInfoList:
+  stageInfoList:
   - {fileID: 11400000, guid: 9ed84d6911ed40a488b2128d38f3f788, type: 2}
   - {fileID: 11400000, guid: 906cbcf1aeb94ef4ca1d378edb099077, type: 2}
   - {fileID: 11400000, guid: d7133edeb847c394c8421cf2dbe2e67e, type: 2}

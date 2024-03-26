@@ -6,6 +6,8 @@ using ClassTemp;
 using Data;
 using UnityEngine;
 using ScriptableObject;
+using ScriptableObject.ChessMapData;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -18,19 +20,29 @@ namespace Manager
 		[SerializeField] private GameObject enemyPrefab;
 		[FormerlySerializedAs("enemySpawnPoint")] [SerializeField] private EnemyPieceSpawnPoint enemyPieceSpawnPoint;
 
+		private int _stageNbr;
+		private int _waveNbr;
 		private PieceType _turn;
 		private bool _isPlayerSelected;
 		private PlayerPiece _player;
 		private readonly List<EntityPiece> _entityPieces = new ();
 
-		private int _remainingTurnUntilNextWave;
 		private Point _nextEnemySpawnPoint;
 
 		private void Start()
 		{
+			Debug.Log("Start");
+			InitGame();
+		}
+
+		private void InitGame()
+		{
+			_stageNbr = 0;
+			_waveNbr = 0;
+			_turn = PieceType.Player;
+			_isPlayerSelected = false;
 			InitPlayer();
 			InitEnemy();
-			GameObject.Find("MapUIManager").GetComponent<MapUIManager>().SetTurnToSpawn(_remainingTurnUntilNextWave);
 		}
 
 		private void InitPlayer()
@@ -44,11 +56,7 @@ namespace Manager
 		private void InitEnemy()
 		{
 			MapManager.Instance.ResetTileAvailability();
-			for (int i = 0; i < 5; i++)
-			{
-				CreateEnemy(EntityType.Meme);
-			}
-			_remainingTurnUntilNextWave = -1;
+			EnemySpawn();
 		}
 
 		private void CreateEnemy(EntityType type)
@@ -83,7 +91,7 @@ namespace Manager
 				PlayerAction(p);
 			MapManager.Instance.ResetTileColor();
 		}
-		
+
 		public void OnPlayerClick()
 		{
 			if (_turn == PieceType.Enemy)
@@ -214,17 +222,48 @@ namespace Manager
 			_player.pos = p;
 		}
 
-		private Point CalNextSpawnPoint()
+		private List<EntityType> CreateRandomTable(WaveInfo waveInfo)
 		{
-			_nextEnemySpawnPoint = enemyPieceSpawnPoint.SpawnPoints[Random.Range(0, enemyPieceSpawnPoint.SpawnPoints.Capacity - 1)];
-			while (MapManager.Instance.IsMapAvailable(_nextEnemySpawnPoint) == false) 
-				_nextEnemySpawnPoint = enemyPieceSpawnPoint.SpawnPoints[Random.Range(0, enemyPieceSpawnPoint.SpawnPoints.Capacity - 1)];
-			return _nextEnemySpawnPoint;
-		}
+			var randomTable = new List<EntityType>();
 
+			
+			for (var i = 0; i < waveInfo.WaveSpawnInfoList.Capacity; i++)
+			{
+				var spawnInfo = waveInfo.WaveSpawnInfoList[i];
+				//100확률로 생성되는 오브제에 대한 처리 필요
+				for (var j = 0; j < spawnInfo.chance; j++)
+						randomTable.Add(spawnInfo.type);
+			}
+			return randomTable;
+		}
 		private void EnemySpawn()
 		{
+			Debug.Log("EnemySpawn");
+
+			var waveInfo = ChessDataManager.Instance.GetWaveInfo(_stageNbr, _waveNbr);
+			if (waveInfo == null)
+				return;
+			var randomTable = CreateRandomTable(waveInfo);
+			var spawnList = new List<EntityType>();
 			
+			Debug.Log(waveInfo.TotalSpawnCnt);
+			while (spawnList.Count < waveInfo.TotalSpawnCnt)
+			{
+				var entityType = randomTable[Random.Range(0, randomTable.Count)];
+				Debug.Log(entityType);
+				var entityCount = spawnList.Count(spawnEntity => spawnEntity == entityType);
+				Debug.Log(entityCount);
+				var entityMaxCount = waveInfo.GetEntityMaxCount(entityType);
+				Debug.Log(entityMaxCount);
+				if (entityMaxCount - entityCount < 1)
+					continue;
+				spawnList.Add(entityType);
+			}
+
+			foreach (var entity in spawnList)
+			{
+				CreateEnemy(entity);
+			}
 		}
 
 		public static Point CalWorldPos(Point p)

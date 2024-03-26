@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49b285a2186286e4aa73d49378d561d5, type: 3}
-  m_Name: S0 W0 ChanceInfo
+  m_Name: S0 W0 Info
   m_EditorClassIdentifier: 
+  totalSpawnCnt: 2
   waveSpawnInfoList:
   - type: 0
     chance: 100

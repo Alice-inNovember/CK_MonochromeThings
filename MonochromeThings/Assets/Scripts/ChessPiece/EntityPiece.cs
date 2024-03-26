@@ -24,28 +24,32 @@ namespace ChessPiece
 	{
 		private EntityData _data;
 		private EntityAi _ai;
-		public int TurnToMove{ get; private set; }
 		public EntityType Type { get; private set; }
 		public Point Pos{ get; private set; }
 		public int UniqueNbr{ get; private set; }
 		public bool HasMoved{ get; set; }
+		public int TurnToMove{ get; private set; }
 
 		public void Init(EntityType type, Point p)
 		{
+			_data = ChessDataManager.Instance.GetEntityData(type);
+			_ai = ChessDataManager.Instance.GetEntityAi(type);
 			Type = type;
 			Pos = p;
+			UniqueNbr = _data.UniqueNbr;
 			HasMoved = false;
-			Move(ChessGameManager.CalWorldPos(Pos), 0.25f);
 			TurnToMove = Random.Range(_data.MinTurnToMove, _data.MaxTurnToMove + 1);
+			Move(ChessGameManager.CalWorldPos(Pos), 0.25f);
 		}
 		public void Init(EntityType type, int uniqueNbr, EntityPiece subject)
 		{
+			_data = ChessDataManager.Instance.GetEntityData(type);
+			_ai = ChessDataManager.Instance.GetEntityAi(type);
 			Type = type;
-			UniqueNbr = uniqueNbr;
 			Pos = subject.Pos;
+			UniqueNbr = subject.UniqueNbr;
 			HasMoved = subject.HasMoved;
 			TurnToMove = subject.TurnToMove;
-			Move(ChessGameManager.CalWorldPos(Pos), 0.25f);
 		}
 
 		public void HighlightAvailableTile()
