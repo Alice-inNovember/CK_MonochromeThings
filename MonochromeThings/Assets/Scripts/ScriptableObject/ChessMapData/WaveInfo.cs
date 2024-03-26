@@ -27,7 +27,7 @@ namespace ScriptableObject.ChessMapData
 
 		public int GetEntityMaxCount(EntityType type)
 		{
-			return (from spawnInfo in waveSpawnInfoList where spawnInfo.type == type select spawnInfo.maxSpawnCnt).FirstOrDefault();
+			return waveSpawnInfoList.Where(spawnInfo => spawnInfo.type == type).Select(spawnInfo => spawnInfo.maxSpawnCnt).FirstOrDefault();
 		}
 	}
 }

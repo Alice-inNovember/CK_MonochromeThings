@@ -40,9 +40,9 @@ namespace Manager
 
 		public StageInfo GetStageInfo(int stageNbr)
 		{
-			if (stageNbr < 0 || stageNbr > (stageInfoList.Count - 1))
-				return null;
-			return stageInfoList[stageNbr];
+			if (stageNbr >= 0 && stageNbr < stageInfoList.Count)
+				return stageInfoList[stageNbr];
+			return null;
 		}
 
 		public WaveInfo GetWaveInfo(int stageNbr, int waveNbr)

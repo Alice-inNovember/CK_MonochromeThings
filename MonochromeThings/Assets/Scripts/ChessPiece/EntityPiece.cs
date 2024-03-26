@@ -1,12 +1,17 @@
-﻿using ChessPiece.AI;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ChessPiece.AI;
 using Data;
 using DG.Tweening;
 using Manager;
 using ScriptableObject;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace ChessPiece
 {
+	[System.Serializable]
 	public enum EntityType
 	{
 		Meme,
@@ -20,8 +25,15 @@ namespace ChessPiece
 		ShelterCaptured
 	}
 
+	[Serializable]
+	internal struct EntityModel
+	{
+		public EntityType entityType;
+		public GameObject model;
+	}
 	public class EntityPiece : MonoBehaviour
 	{
+		[SerializeField] private List<EntityModel> modelList;
 		private EntityData _data;
 		private EntityAi _ai;
 		public EntityType Type { get; private set; }
@@ -29,7 +41,7 @@ namespace ChessPiece
 		public int UniqueNbr{ get; private set; }
 		public bool HasMoved{ get; set; }
 		public int TurnToMove{ get; private set; }
-
+		
 		public void Init(EntityType type, Point p)
 		{
 			_data = ChessDataManager.Instance.GetEntityData(type);
@@ -39,6 +51,7 @@ namespace ChessPiece
 			UniqueNbr = _data.UniqueNbr;
 			HasMoved = false;
 			TurnToMove = Random.Range(_data.MinTurnToMove, _data.MaxTurnToMove + 1);
+			ChangeModel(type);
 			Move(ChessGameManager.CalWorldPos(Pos), 0.25f);
 		}
 		public void Init(EntityType type, int uniqueNbr, EntityPiece subject)
@@ -50,6 +63,16 @@ namespace ChessPiece
 			UniqueNbr = subject.UniqueNbr;
 			HasMoved = subject.HasMoved;
 			TurnToMove = subject.TurnToMove;
+			ChangeModel(type);
+			Move(ChessGameManager.CalWorldPos(Pos), 0.25f);
+		}
+
+		private void ChangeModel(EntityType type)
+		{
+			foreach (var model in modelList)
+				model.model.SetActive(false);
+			foreach (var model in modelList.Where(model => model.entityType == type))
+				model.model.SetActive(true);
 		}
 
 		public void HighlightAvailableTile()

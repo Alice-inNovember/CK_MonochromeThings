@@ -13,7 +13,8 @@ namespace ChessPiece.AI
             var distances = new float[data.AvailablePoints.Capacity];
             for (var i = 0; i < data.AvailablePoints.Capacity; i++)
                 distances[i] = Point.Dist(ChessGameManager.Instance.GetPlayerPos(), pos + data.AvailablePoints[i]);
-            var minIndex = Array.IndexOf(distances, Mathf.Min(distances));
+            var minIndex = 0;
+            minIndex = Array.IndexOf(distances, Mathf.Min(distances));
 
             //이동하려는 위치가 가능하다면 리턴
             if (MapManager.Instance.IsMapAvailable(pos + data.AvailablePoints[minIndex]))

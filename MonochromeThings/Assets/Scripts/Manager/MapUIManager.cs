@@ -7,7 +7,7 @@ namespace Manager
 	{
 		[SerializeField] private TextMeshProUGUI turnToSpawn;
 
-		public void SetTurnToSpawn(int turn)
+		public void SetTurnUntilNextWave(int turn)
 		{
 			turnToSpawn.text = turn.ToString();
 		}

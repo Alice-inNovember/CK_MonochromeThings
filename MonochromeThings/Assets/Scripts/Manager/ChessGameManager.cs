@@ -22,16 +22,14 @@ namespace Manager
 
 		private int _stageNbr;
 		private int _waveNbr;
+		private int _turnsUntilNextWave;
 		private PieceType _turn;
 		private bool _isPlayerSelected;
 		private PlayerPiece _player;
 		private readonly List<EntityPiece> _entityPieces = new ();
 
-		private Point _nextEnemySpawnPoint;
-
 		private void Start()
 		{
-			Debug.Log("Start");
 			InitGame();
 		}
 
@@ -39,10 +37,17 @@ namespace Manager
 		{
 			_stageNbr = 0;
 			_waveNbr = 0;
+			_turnsUntilNextWave = 0;
 			_turn = PieceType.Player;
 			_isPlayerSelected = false;
 			InitPlayer();
 			InitEnemy();
+			SetUI();
+		}
+
+		private void SetUI()
+		{
+			GameObject.Find("MapUIManager").GetComponent<MapUIManager>().SetTurnUntilNextWave(_turnsUntilNextWave);
 		}
 
 		private void InitPlayer()
@@ -209,12 +214,13 @@ namespace Manager
 			foreach (var entity in _entityPieces)
 				entity.HasMoved = false;
 
-			yield return new WaitForSeconds(0.5f);
-
 			//전투
 
 			//스폰
 			EnemySpawn();
+			SetUI();
+			_turn = PieceType.Player;
+			_waveNbr++;
 		}
 		private void PlayerMove(Point p)
 		{
@@ -238,32 +244,39 @@ namespace Manager
 		}
 		private void EnemySpawn()
 		{
-			Debug.Log("EnemySpawn");
-
+			if (_turnsUntilNextWave > 1)
+			{
+				_turnsUntilNextWave--;
+				return;
+			}
+			_turnsUntilNextWave--;
+			SetUI();
+			
 			var waveInfo = ChessDataManager.Instance.GetWaveInfo(_stageNbr, _waveNbr);
 			if (waveInfo == null)
+			{
+				Debug.Log($"<waveInfo is Null> Info : S{_stageNbr}, W{_waveNbr}");
 				return;
+			}
 			var randomTable = CreateRandomTable(waveInfo);
 			var spawnList = new List<EntityType>();
 			
-			Debug.Log(waveInfo.TotalSpawnCnt);
 			while (spawnList.Count < waveInfo.TotalSpawnCnt)
 			{
 				var entityType = randomTable[Random.Range(0, randomTable.Count)];
-				Debug.Log(entityType);
 				var entityCount = spawnList.Count(spawnEntity => spawnEntity == entityType);
-				Debug.Log(entityCount);
 				var entityMaxCount = waveInfo.GetEntityMaxCount(entityType);
-				Debug.Log(entityMaxCount);
-				if (entityMaxCount - entityCount < 1)
+
+				if (entityMaxCount - entityCount == 0)
 					continue;
 				spawnList.Add(entityType);
 			}
 
 			foreach (var entity in spawnList)
-			{
 				CreateEnemy(entity);
-			}
+
+			//기획서에 따라 웨이브별 렌덤 적용해야 함
+			_turnsUntilNextWave = 2;
 		}
 
 		public static Point CalWorldPos(Point p)

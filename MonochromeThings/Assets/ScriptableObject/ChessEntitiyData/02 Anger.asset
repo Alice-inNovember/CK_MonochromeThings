@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a765cd9448489bb49921b672e2fdbb84, type: 3}
   m_Name: 02 Anger
   m_EditorClassIdentifier: 
-  id: 2
-  prefab: {fileID: 0}
+  type: 2
   enemyName: Anger
   uniqueNbr: 2
   minTurnToMove: 0
